@@ -171,17 +171,18 @@ See [SETUP.md](SETUP.md) for detailed instructions, database setup, and troubles
 
 ### Deploy to Cloudflare Pages
 
+See **[DEPLOYMENT.md](DEPLOYMENT.md)** for complete deployment instructions.
+
+**Quick steps:**
 1. Push code to GitHub
-2. Cloudflare Dashboard → Workers & Pages → Create application → Pages
-3. Connect repository
-4. Build settings:
-   - Build command: `npm run build`
-   - Build output: `dist`
-5. Settings → Functions → D1 database bindings:
+2. Connect to Cloudflare Pages
+3. Build command: `npm run build`
+4. Build output: `dist`
+5. **Important:** Configure D1 binding in Settings → Functions
    - Variable name: `DB`
    - D1 database: Select your database
-6. (Optional) Settings → Environment variables:
-   - `DISABLE_SIGNUPS` = `true`
+
+Full guide: [DEPLOYMENT.md](DEPLOYMENT.md)
 
 ### Cost
 
