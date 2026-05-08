@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Khaata — modern fintech dashboard design system. All HSL. */
+
+@layer base {
+  :root {
+    /* Surfaces — deep navy night */
+    --background: 224 32% 6%;
+    --foreground: 210 30% 96%;
+
+    --card: 224 28% 9%;
+    --card-foreground: 210 30% 96%;
+
+    --popover: 224 30% 8%;
+    --popover-foreground: 210 30% 96%;
+
+    /* Brand — refined emerald (financial growth) */
+    --primary: 156 72% 52%;
+    --primary-foreground: 224 40% 6%;
+    --primary-glow: 156 80% 62%;
+
+    /* Secondary surface */
+    --secondary: 224 22% 13%;
+    --secondary-foreground: 210 25% 92%;
+
+    --muted: 224 20% 12%;
+    --muted-foreground: 220 12% 60%;
+
+    /* Accent — soft violet for highlights (used sparingly) */
+    --accent: 224 24% 14%;
+    --accent-foreground: 210 30% 96%;
+
+    /* Semantic finance colors */
+    --income: 156 72% 52%;
+    --expense: 8 88% 66%;
+    --bill: 38 92% 62%;
+    --emi: 268 76% 68%;
+    --savings: 195 85% 60%;
+
+    --destructive: 0 75% 60%;
+    --destructive-foreground: 210 30% 96%;
+
+    --border: 224 18% 16%;
+    --input: 224 18% 14%;
+    --ring: 156 72% 52%;
+
+    --radius: 0.875rem;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(156 72% 52%) 0%, hsl(168 80% 50%) 100%);
+    --gradient-expense: linear-gradient(135deg, hsl(8 88% 66%) 0%, hsl(346 84% 62%) 100%);
+    --gradient-bill: linear-gradient(135deg, hsl(38 92% 62%) 0%, hsl(22 90% 60%) 100%);
+    --gradient-emi: linear-gradient(135deg, hsl(268 76% 68%) 0%, hsl(232 78% 64%) 100%);
+    --gradient-card: linear-gradient(180deg, hsl(224 28% 11%) 0%, hsl(224 28% 8%) 100%);
+    --gradient-mesh: radial-gradient(at 20% 0%, hsl(156 72% 52% / 0.12) 0px, transparent 50%),
+                     radial-gradient(at 80% 0%, hsl(268 76% 68% / 0.10) 0px, transparent 50%),
+                     radial-gradient(at 50% 50%, hsl(195 85% 60% / 0.06) 0px, transparent 60%);
+
+    /* Shadows */
+    --shadow-elegant: 0 8px 32px -8px hsl(156 72% 30% / 0.35);
+    --shadow-glow: 0 0 48px hsl(156 80% 62% / 0.25);
+    --shadow-card: 0 1px 0 0 hsl(0 0% 100% / 0.04) inset, 0 8px 24px -12px hsl(0 0% 0% / 0.6);
+
+    /* Motion */
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+    --transition-smooth: all 0.35s var(--ease-out);
+
+    --sidebar-background: 224 30% 7%;
+    --sidebar-foreground: 220 15% 70%;
+    --sidebar-primary: 156 72% 52%;
+    --sidebar-primary-foreground: 224 40% 6%;
+    --sidebar-accent: 224 24% 12%;
+    --sidebar-accent-foreground: 210 30% 96%;
+    --sidebar-border: 224 18% 14%;
+    --sidebar-ring: 156 72% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html, body, #root {
+    @apply h-full;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv11', 'ss01', 'ss03';
+    background-image: var(--gradient-mesh);
+    background-attachment: fixed;
+  }
+
+  .font-mono-num {
+    font-family: 'JetBrains Mono', ui-monospace, monospace;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.02em;
+  }
+}
+
+@layer components {
+  .glass-card {
+    @apply rounded-[var(--radius)] border border-border/60 backdrop-blur-xl;
+    background: var(--gradient-card);
+    box-shadow: var(--shadow-card);
+  }
+
+  .stat-ring {
+    @apply absolute inset-0 rounded-[inherit] opacity-0 transition-opacity duration-500;
+    background: radial-gradient(600px circle at var(--mx, 50%) var(--my, 0%), hsl(var(--primary) / 0.08), transparent 40%);
+  }
+
+  .glass-card:hover .stat-ring { @apply opacity-100; }
+}
+
+@layer utilities {
+  .text-balance { text-wrap: balance; }
+  .scrollbar-thin::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 3px; }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "Khaata — Smart Personal Finance",
+  "short_name": "Khaata",
+  "description": "Track UPI spends, bills and EMIs. Scan any payment screenshot and let AI categorise it.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b1018",
+  "theme_color": "#0b1018",
+  "orientation": "portrait",
+  "icons": [
+    { "src": "/khaata-logo.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
