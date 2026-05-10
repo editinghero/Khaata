@@ -178,18 +178,51 @@ export const DEFAULT_BUDGETS: Record<string, number> = {
   Entertainment: 3000, Housing: 30000, Utilities: 4000, Health: 3000,
   Subscription: 1500, Loan: 12000, CreditCard: 10000, Education: 5000, Other: 5000,
 };
-const budgetsKey = (uid: string) => `khaata.budgets.${uid}`;
-export function loadBudgets(uid: string): Record<string, number> {
-  try {
-    const raw = localStorage.getItem(budgetsKey(uid));
-    if (raw) return { ...DEFAULT_BUDGETS, ...JSON.parse(raw) };
-  } catch (error) {
-    console.error("Failed to load budgets:", error);
-  }
-  return { ...DEFAULT_BUDGETS };
-}
-export function saveBudgets(uid: string, b: Record<string, number>) {
-  localStorage.setItem(budgetsKey(uid), JSON.stringify(b));
+
+export function useBudgets() {
+  const { user } = useAuth();
+  const [budgets, setBudgets] = useState<Record<string, number>>({});
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    if (!user) { setBudgets({}); setLoading(false); return; }
+    setLoading(true);
+    try {
+      const data = await db.budgets.list(user.id);
+      setBudgets({ ...DEFAULT_BUDGETS, ...data });
+    } catch (error) {
+      console.error("Failed to load budgets:", error);
+      setBudgets({ ...DEFAULT_BUDGETS });
+    } finally {
+      setLoading(false);
+    }
+  }, [user]);
+
+  useEffect(() => { refresh(); }, [refresh]);
+
+  const update = useCallback(async (category: string, amount: number) => {
+    if (!user) return;
+    setBudgets(prev => ({ ...prev, [category]: amount }));
+    try {
+      await db.budgets.update(user.id, category, amount);
+    } catch (error) {
+      console.error("Failed to update budget:", error);
+      await refresh(); // Revert on failure
+    }
+  }, [user, refresh]);
+
+  const reset = useCallback(async () => {
+    if (!user) return;
+    setBudgets({ ...DEFAULT_BUDGETS });
+    try {
+      await db.budgets.reset(user.id, DEFAULT_BUDGETS);
+    } catch (error) {
+      console.error("Failed to reset budgets:", error);
+      await refresh(); // Revert on failure
+    }
+  }, [user, refresh]);
+
+  return { budgets, update, reset, loading, refresh };
 }
 
 export type AiProvider = "gemini" | "custom";

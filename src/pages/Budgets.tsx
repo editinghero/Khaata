@@ -1,31 +1,20 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { AppShell } from "@/components/finance/AppShell";
-import { categoryBreakdown, sameMonth, formatCurrency, loadBudgets, saveBudgets, DEFAULT_BUDGETS } from "@/lib/finance";
+import { categoryBreakdown, sameMonth, formatCurrency, useBudgets } from "@/lib/finance";
 import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Pencil, Check, X, RotateCcw } from "lucide-react";
-import { useAuth } from "@/lib/auth";
+import { Pencil, Check, X, RotateCcw, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 export default function BudgetsPage() {
-  const { user } = useAuth();
   const { toast } = useToast();
-  const [budgets, setBudgets] = useState<Record<string, number>>({});
+  const { budgets, update, reset, loading } = useBudgets();
   const [editing, setEditing] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
 
-  useEffect(() => { if (user) setBudgets(loadBudgets(user.id)); }, [user]);
-
-  const update = (cat: string, val: number) => {
-    if (!user) return;
-    const next = { ...budgets, [cat]: val };
-    setBudgets(next); saveBudgets(user.id, next);
-  };
-  const reset = () => {
-    if (!user) return;
-    setBudgets({ ...DEFAULT_BUDGETS });
-    saveBudgets(user.id, { ...DEFAULT_BUDGETS });
+  const handleReset = async () => {
+    await reset();
     toast({ title: "Budgets reset to defaults" });
   };
 
@@ -46,9 +35,14 @@ export default function BudgetsPage() {
                 <h1 className="mt-1 text-xl sm:text-3xl font-bold tracking-tight">Budgets</h1>
                 <p className="text-xs sm:text-sm text-muted-foreground mt-1.5">Tap a row to edit your monthly cap</p>
               </div>
-              <Button variant="outline" size="sm" onClick={reset}><RotateCcw className="h-3.5 w-3.5 mr-1.5" />Reset</Button>
+              <Button variant="outline" size="sm" onClick={handleReset}><RotateCcw className="h-3.5 w-3.5 mr-1.5" />Reset</Button>
             </section>
             <section className="glass-card p-5 space-y-4">
+              {loading && (
+                <div className="flex items-center justify-center py-6 text-muted-foreground">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                </div>
+              )}
               {allCats.length === 0 && (
                 <p className="text-sm text-muted-foreground text-center py-6">No budgets yet.</p>
               )}

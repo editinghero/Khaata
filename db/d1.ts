@@ -75,5 +75,28 @@ export function d1Repo(db: D1Database) {
         .bind(id, userId)
         .run();
     },
+    budgets: {
+      async list(userId: string): Promise<Record<string, number>> {
+        const { results } = await db
+          .prepare("SELECT category, amount FROM budgets WHERE user_id = ?")
+          .bind(userId)
+          .all<{ category: string; amount: number }>();
+        const budgets: Record<string, number> = {};
+        for (const r of results) budgets[r.category] = Number(r.amount);
+        return budgets;
+      },
+      async update(userId: string, category: string, amount: number): Promise<void> {
+        const id = crypto.randomUUID();
+        await db
+          .prepare(
+            `INSERT INTO budgets (id, user_id, category, amount)
+             VALUES (?, ?, ?, ?)
+             ON CONFLICT(user_id, category) DO UPDATE SET
+             amount = excluded.amount, updated_at = datetime('now')`
+          )
+          .bind(id, userId, category, amount)
+          .run();
+      },
+    },
   };
 }
