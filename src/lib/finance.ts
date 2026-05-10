@@ -92,15 +92,36 @@ export const sumByType = (txs: Transaction[], type: TxType) =>
 export function monthlySeries(txs: Transaction[], months = 6) {
   const now = new Date();
   const series: { label: string; expense: number; bill: number; emi: number; income: number }[] = [];
+  const monthData = new Map<string, { label: string; expense: number; bill: number; emi: number; income: number }>();
+  const monthKeys: string[] = [];
+
   for (let i = months - 1; i >= 0; i--) {
     const ref = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    const inMonth = txs.filter(t => sameMonth(t.date, ref));
-    series.push({
+    const key = `${ref.getFullYear()}-${ref.getMonth()}`;
+    monthKeys.push(key);
+    monthData.set(key, {
       label: ref.toLocaleString("en-US", { month: "short" }),
-      expense: +sumByType(inMonth, "expense").toFixed(2),
-      bill: +sumByType(inMonth, "bill").toFixed(2),
-      emi: +sumByType(inMonth, "emi").toFixed(2),
-      income: +sumByType(inMonth, "income").toFixed(2),
+      expense: 0, bill: 0, emi: 0, income: 0,
+    });
+  }
+
+  for (const t of txs) {
+    const d = new Date(t.date);
+    const key = `${d.getFullYear()}-${d.getMonth()}`;
+    const data = monthData.get(key);
+    if (data && t.type in data) {
+      data[t.type as keyof typeof data] = (data[t.type as keyof typeof data] as number) + t.amount;
+    }
+  }
+
+  for (const key of monthKeys) {
+    const data = monthData.get(key)!;
+    series.push({
+      label: data.label,
+      expense: +data.expense.toFixed(2),
+      bill: +data.bill.toFixed(2),
+      emi: +data.emi.toFixed(2),
+      income: +data.income.toFixed(2),
     });
   }
   return series;
