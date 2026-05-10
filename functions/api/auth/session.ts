@@ -1,11 +1,8 @@
-interface Env {
-  DB: D1Database;
-}
+import { Env, getSessionToken } from "../_auth";
 
 export const onRequestGet: PagesFunction<Env> = async ({ request, env }) => {
   try {
-    const cookie = request.headers.get("Cookie");
-    const sessionToken = cookie?.split(';').find(c => c.trim().startsWith('session='))?.split('=')[1];
+    const sessionToken = getSessionToken(request);
 
     if (!sessionToken) {
       return Response.json({ user: null }, { status: 401 });
