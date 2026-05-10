@@ -42,3 +42,14 @@ CREATE INDEX IF NOT EXISTS idx_transactions_user_date ON transactions(user_id, d
 CREATE INDEX IF NOT EXISTS idx_transactions_type ON transactions(type);
 CREATE INDEX IF NOT EXISTS idx_transactions_category ON transactions(category);
 CREATE INDEX IF NOT EXISTS idx_transactions_due ON transactions(due_date);
+
+CREATE TABLE IF NOT EXISTS budgets (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  category TEXT NOT NULL,
+  amount REAL NOT NULL,
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+  UNIQUE(user_id, category),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);

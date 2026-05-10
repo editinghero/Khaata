@@ -5,6 +5,11 @@ interface DbClient {
   insert: (tx: Transaction, userId: string) => Promise<void>;
   update: (id: string, patch: Partial<Transaction>, userId: string) => Promise<void>;
   remove: (id: string, userId: string) => Promise<void>;
+  budgets: {
+    list: (userId: string) => Promise<Record<string, number>>;
+    update: (userId: string, category: string, amount: number) => Promise<void>;
+    reset: (userId: string, defaultBudgets: Record<string, number>) => Promise<void>;
+  };
 }
 
 const d1Db: DbClient = {
@@ -37,6 +42,30 @@ const d1Db: DbClient = {
       method: "DELETE",
     });
     if (!response.ok) throw new Error("Failed to delete transaction");
+  },
+
+  budgets: {
+    async list(userId: string): Promise<Record<string, number>> {
+      const response = await fetch(`/api/budgets?userId=${userId}`);
+      if (!response.ok) throw new Error("Failed to fetch budgets");
+      return response.json();
+    },
+    async update(userId: string, category: string, amount: number): Promise<void> {
+      const response = await fetch(`/api/budgets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ category, amount, userId }),
+      });
+      if (!response.ok) throw new Error("Failed to update budget");
+    },
+    async reset(userId: string, defaultBudgets: Record<string, number>): Promise<void> {
+      const response = await fetch(`/api/budgets`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ budgets: defaultBudgets, userId }),
+      });
+      if (!response.ok) throw new Error("Failed to reset budgets");
+    },
   },
 };
 
