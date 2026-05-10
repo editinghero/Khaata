@@ -1,25 +1,5 @@
 import { d1Repo } from "../../../db/d1";
-
-interface Env {
-  DB: D1Database;
-}
-
-async function getUserFromSession(request: Request, env: Env): Promise<string | null> {
-  const cookie = request.headers.get("Cookie");
-  const sessionToken = cookie?.split(';').find(c => c.trim().startsWith('session='))?.split('=')[1];
-
-  if (!sessionToken) return null;
-
-  const session = await env.DB.prepare(
-    "SELECT user_id, expires_at FROM sessions WHERE token = ?"
-  ).bind(sessionToken).first() as { user_id: string; expires_at: string } | null;
-
-  if (!session || new Date(session.expires_at) < new Date()) {
-    return null;
-  }
-
-  return session.user_id;
-}
+import { Env, getUserFromSession } from "../_auth";
 
 export const onRequestPatch: PagesFunction<Env> = async ({ request, env, params }) => {
   const userId = await getUserFromSession(request, env);
