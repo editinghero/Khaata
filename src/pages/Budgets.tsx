@@ -35,7 +35,7 @@ export default function BudgetsPage() {
                 <h1 className="mt-1 text-xl sm:text-3xl font-bold tracking-tight">Budgets</h1>
                 <p className="text-xs sm:text-sm text-muted-foreground mt-1.5">Tap a row to edit your monthly cap</p>
               </div>
-              <Button variant="outline" size="sm" onClick={handleReset}><RotateCcw className="h-3.5 w-3.5 mr-1.5" />Reset</Button>
+              <Button type="button" variant="outline" size="sm" onClick={handleReset}><RotateCcw className="h-3.5 w-3.5 mr-1.5" />Reset</Button>
             </section>
             <section className="glass-card p-5 space-y-4">
               {loading && (
@@ -63,16 +63,23 @@ export default function BudgetsPage() {
                             autoFocus type="number" min="0" value={draft}
                             onChange={e => setDraft(e.target.value)}
                             onKeyDown={e => {
-                              if (e.key === "Enter") { update(name, Math.max(0, parseFloat(draft) || 0)); setEditing(null); }
-                              if (e.key === "Escape") setEditing(null);
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                update(name, Math.max(0, parseFloat(draft) || 0));
+                                setEditing(null);
+                              }
+                              if (e.key === "Escape") {
+                                e.preventDefault();
+                                setEditing(null);
+                              }
                             }}
                             className="h-8 w-28 font-mono-num"
                           />
-                          <Button size="icon" variant="ghost" className="h-7 w-7"
+                          <Button type="button" size="icon" variant="ghost" className="h-7 w-7"
                             onClick={() => { update(name, Math.max(0, parseFloat(draft) || 0)); setEditing(null); }}>
                             <Check className="h-4 w-4 text-primary" />
                           </Button>
-                          <Button size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(null)}>
+                          <Button type="button" size="icon" variant="ghost" className="h-7 w-7" onClick={() => setEditing(null)}>
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
@@ -81,7 +88,7 @@ export default function BudgetsPage() {
                           <span className={`font-mono-num ${over ? "text-expense" : "text-muted-foreground"}`}>
                             {formatCurrency(spent)} <span className="text-muted-foreground">/ {formatCurrency(cap)}</span>
                           </span>
-                          <Button size="icon" variant="ghost" className="h-7 w-7"
+                          <Button type="button" size="icon" variant="ghost" className="h-7 w-7"
                             onClick={() => { setEditing(name); setDraft(String(cap)); }} aria-label="Edit budget">
                             <Pencil className="h-3.5 w-3.5" />
                           </Button>
